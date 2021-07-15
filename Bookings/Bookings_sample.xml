@@ -1,0 +1,123 @@
+<?xml version='1.0'?>
+
+<Bookings status="OK">
+
+    <Booking>
+
+        <Id>1</Id>
+
+        <Title>Title-1</Title>
+
+        <Agenda></Agenda>
+
+        <Privacy>Public</Privacy>
+
+        <Organizer>
+
+            <FirstName>Demo</FirstName>
+
+            <LastName></LastName>
+
+            <Email></Email>
+
+        </Organizer>
+
+        <Time>
+
+            <StartTime>2021-07-13T10:00:00.000Z</StartTime>
+
+            <StartTimeBuffer>300</StartTimeBuffer>
+
+            <EndTime>2021-07-13T10:45:00.000Z</EndTime>
+
+            <EndTimeBuffer>0</EndTimeBuffer>
+
+        </Time>
+
+        <MaximumMeetingExtension>5</MaximumMeetingExtension>
+
+        <BookingStatus>OK</BookingStatus>
+
+        <BookingStatusMessage></BookingStatusMessage>
+
+        <Webex>
+
+            <Enabled>False</Enabled>
+
+            <MeetingNumber></MeetingNumber>
+
+            <Password></Password>
+
+        </Webex>
+
+        <Encryption>BestEffort</Encryption>
+
+        <Role>Master</Role>
+
+        <Recording>Disabled</Recording>
+
+        <DialInfo>
+
+            <Calls>
+
+                <Call>
+
+                    <Number>test_url_1.com</Number>
+
+                    <Protocol>SIP</Protocol>
+
+                    <CallRate>6000</CallRate>
+
+                    <CallType>Video</CallType>
+
+                </Call>
+
+            </Calls>
+
+            <ConnectMode>OBTP</ConnectMode>
+
+        </DialInfo>
+
+    </Booking>
+
+
+    <Booking>
+        <Id>2</Id>
+        <Title>Title-2</Title>
+        <Agenda></Agenda>
+        <Privacy>Public</Privacy>
+        <Organizer>
+            <FirstName>Demo</FirstName>
+            <LastName></LastName>
+            <Email></Email>
+        </Organizer>
+        <Time>
+            <StartTime>2021-07-13T12:00:00.000Z</StartTime>
+            <StartTimeBuffer>300</StartTimeBuffer>
+            <EndTime>2021-07-13T12:50:00.000Z</EndTime>
+            <EndTimeBuffer>0</EndTimeBuffer>
+        </Time>
+        <MaximumMeetingExtension>5</MaximumMeetingExtension>
+        <BookingStatus>OK</BookingStatus>
+        <BookingStatusMessage></BookingStatusMessage>
+        <Webex>
+            <Enabled>False</Enabled>
+            <MeetingNumber></MeetingNumber>
+            <Password></Password>
+        </Webex>
+        <Encryption>BestEffort</Encryption>
+        <Role>Master</Role>
+        <Recording>Disabled</Recording>
+        <DialInfo>
+            <Calls>
+                <Call>
+                    <Number>test_url_2.com</Number>
+                    <Protocol>SIP</Protocol>
+                    <CallRate>6000</CallRate>
+                    <CallType>Video</CallType>
+                </Call>
+            </Calls>
+            <ConnectMode>OBTP</ConnectMode>
+        </DialInfo>
+    </Booking>
+</Bookings>

@@ -1,0 +1,342 @@
+<!-- Copyright (c) 2021 Cisco and/or its affiliates.
+
+This software is licensed to you under the terms of the Cisco Sample
+Code License, Version 1.1 (the "License"). You may obtain a copy of the
+License at
+
+https://developer.cisco.com/docs/licenses
+
+All use of the material herein must be in accordance with the terms of
+the License. All rights not expressly granted by the License are
+reserved. Unless required by applicable law or agreed to separately in
+writing, software distributed under the License is distributed on an "AS
+IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express
+or implied. -->
+
+<!doctype html>
+<html lang="en">
+
+<head>
+    <title>Bookings OBTP Dashboard - Demo</title>
+
+    <!-- Using Cisco UI Kit -->
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static',filename='css/cui-standard.min.css') }}">
+
+    <!-- Using hihglight.js to beatify code area -->
+    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.2/styles/default.min.css">
+    <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.2/highlight.min.js"></script>
+    <script>hljs.initHighlightingOnLoad();</script>
+
+    <!-- Using AJAX to send get & post http requests -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.2/jquery.min.js"></script>
+
+    <!-- Functions -->
+    <script>
+
+        // Get Bookings button clicked
+        function getAllBookings() {
+
+            // Time for logging 
+            var today = new Date();
+            var time = ('0' + today.getHours()).substr(-2) + ":" + ('0' + today.getMinutes()).substr(-2) + ":" + ('0' + today.getSeconds()).substr(-2);
+
+            // Log message
+            var action = "get_bookings";
+            device_ip_address = document.getElementById("device-ip-address").value;
+            text = time + " - Action: (" + action + ") on device: " + device_ip_address;
+
+            // Areas to update with the result
+            var summary_area = document.getElementById("summary");
+            summary_area.value += text + "\n";
+            summary_area.scrollTop = summary_area.scrollHeight;
+
+            // Get request, without changing the page
+            $.get('/get_bookings',
+                {
+                    device_ip_address: device_ip_address,
+                    action: action
+                }).done(function (json) {
+                    parsed_json = JSON.parse(json);
+
+                    // Updating id="num-of-bookings"
+                    var num_of_bookings_area = document.getElementById("num-of-bookings");
+                    num_of_bookings_area.innerHTML = "  " + parsed_json.num_of_bookings;
+
+                    // Beautfying json response
+                    beautified_json = JSON.stringify(parsed_json.list_of_bookings, null, 4);
+
+                    // Updating Bookings List Area
+                    var bookings_list_area = document.getElementById("bookings-list");
+                    bookings_list_area.innerHTML = ''
+                    bookings_list_area.innerHTML = beautified_json;
+
+                    // Highlighting code
+                    hljs.highlightBlock(bookings_list_area);
+                });
+
+        }
+
+        // Clear All Bookings button clicked
+        function clearAllBookings() {
+
+
+            // Time for logging 
+            var today = new Date();
+            var time = ('0' + today.getHours()).substr(-2) + ":" + ('0' + today.getMinutes()).substr(-2) + ":" + ('0' + today.getSeconds()).substr(-2);
+
+            // Log message
+            var action = "clear_bookings";
+            device_ip_address = document.getElementById("device-ip-address").value;
+            text = time + " - Action: (" + action + ") on device: " + device_ip_address;
+
+            // Areas to update with the result
+            var summary_area = document.getElementById("summary");
+            summary_area.value += text + "\n";
+            summary_area.scrollTop = summary_area.scrollHeight;
+
+            // Getting confirmation
+            var confirmed = confirm("Are you sure?\nThis will delete all exisitng bookings in the device..");
+            if (confirmed) {
+                // Log message
+                text = time + " - Confirmed: (" + confirmed + ")";
+                summary_area.value += text + "\n";
+                summary_area.scrollTop = summary_area.scrollHeight;
+
+                // Get request, without changing the page
+                $.post('/clear_bookings',
+                    {
+                        device_ip_address: device_ip_address,
+                        action: action
+                    }).done(function (response) {
+                        text = time + " - Response: (" + response + ")";
+                        summary_area.value += text + "\n";
+                        summary_area.scrollTop = summary_area.scrollHeight;
+
+                        // Updating id="num-of-bookings"
+                        var num_of_bookings_area = document.getElementById("num-of-bookings");
+                        num_of_bookings_area.innerHTML = " --";
+
+                        // Updating Bookings List Area
+                        var bookings_list_area = document.getElementById("bookings-list");
+                        bookings_list_area.innerHTML = ''
+
+                    });
+                
+                deleteXMLFile();
+
+            }
+            else {
+                // Log message
+                text = time + " - Confirmed: (" + confirmed + ")";
+                summary_area.value += text + "\n";
+                summary_area.scrollTop = summary_area.scrollHeight;
+            }
+
+        }
+
+        // Insert a new Booking button clicked
+        function insertBooking() {
+            // Time for logging 
+            var today = new Date();
+            var time = ('0' + today.getHours()).substr(-2) + ":" + ('0' + today.getMinutes()).substr(-2) + ":" + ('0' + today.getSeconds()).substr(-2);
+
+            // Log message
+            var action = "insert_a_booking";
+            device_ip_address = document.getElementById("device-ip-address").value;
+            text = time + " - Action: (" + action + ") on device: " + device_ip_address;
+
+            // Areas to update with the result
+            var summary_area = document.getElementById("summary");
+            summary_area.value += text + "\n";
+            summary_area.scrollTop = summary_area.scrollHeight;
+
+            // New tab
+            redirect: window.open('../insert_booking', '_blank');
+        }
+
+        // Delete XML File button clicked
+        function deleteXMLFile() {
+            var confirmed = confirm("Delete the XML file with all the bookings?");
+            if (confirmed) {
+
+                $.post('/delete_xml_file',
+                    {
+
+                    }).done(function (response) {
+                        alert('Response: ' + response);
+                    });
+
+            }
+        }
+
+    </script>
+
+</head>
+
+<body class="cui">
+
+    <!-- Main Header -->
+    <nav class="header" id="styleguideheader" role="navigation">
+        <div class="container-fluid">
+            <div class="header-panels">
+                <div class="header-panel hidden-md-down">
+                    <a class="header__logo" href="http://www.cisco.com" target="_blank">
+                        <span class="icon-cisco"></span>
+                    </a>
+                    <h1 class="header__title">
+                        <span>Bookings OBTP Dashboard - Demo</span>
+                    </h1>
+                </div>
+                <div class="header-panel header-panel--center base-margin-left base-margin-right hidden-lg-up">
+                    <a class="header__logo" href="http://www.cisco.com" target="_blank">
+                        <span class="icon-cisco"></span>
+                    </a>
+                </div>
+                <div class="header-panel header-panel--right hidden-md-down">
+                    <a href="../logout" class="header-item" title="Logout"><span
+                            class="btn btn--ghost">Logout</span></a>
+                    <a href="../" class="header-item" title="Home"><span class="icon-home"></span></a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Content -->
+    <div class="content content--alt">
+        <div class="container-fluid">
+
+            <!-- Header Demo -->
+            <div class="panel panel--loose panel--raised base-margin-top">
+                <h4 class="title">
+                    Bookings OBTP Dashboard - Demo
+                    <span class="pull-right" disabled>Device: ({{ device_id }}) </span>
+                </h4>
+
+            </div>
+
+
+            <!-- Content -->
+            <div class="row">
+
+                <!-- Left Rail -->
+                <div class="col">
+                    <div class="section">
+
+                        <!-- User info Area -->
+                        <div class="panel panel--loose panel--raised base-margin-top">
+
+                            <!-- Device Info Area -->
+                            <div class="form-group base-margin-top">
+                                <div class="form-group__text">
+                                    <label for="device-ip-address">Device Address:</label>
+                                    <textarea id="device-ip-address" rows="1" class="hover"
+                                        disabled>{{ device_ip_address }}</textarea>
+                                </div>
+                            </div>
+
+                            <!-- Get Bookings Button -->
+                            <div class="form-group base-margin-top">
+                                <button id="get-bookings-button" class="btn btn--primary" onclick="getAllBookings()">Get
+                                    Current Bookings</button>
+                            </div>
+
+                            <!-- Insert Bookings using XML Button -->
+                            <div class="form-group base-margin-top">
+                                <button id="insert-booking-xml-button" class="btn btn--success"
+                                    onclick="insertBooking()">Insert a new booking</button>
+                            </div>
+
+                            <!-- Clear All Bookings Button -->
+                            <div class="form-group base-margin-top">
+                                <button id="clear-bookings-button" class="btn btn--danger"
+                                    onclick="clearAllBookings()">Clear All Bookings</button>
+                            </div>
+                            <!-- Info alert e.g. about required preconfigurations-->
+                            <div class="alert alert--danger">
+                                <div class="alert__icon icon-info-outline"></div>
+                                <div class="alert__message">
+                                    Warning: This will clear all the current bookings on the device, & delete the XML bookings file
+                                    for this device (if exists)..
+                                </div>
+                            </div>
+
+                        </div>
+
+
+                    </div>
+                </div>
+
+                <!-- Right Rail -->
+                <div class="col">
+                    <div class="section">
+
+                        <!-- Summary Area -->
+                        <div class="panel panel--loose panel--raised base-margin-top">
+
+                            <!-- Summary Area -->
+                            <div class="form-group base-margin-top">
+                                <div class="form-group__text" style="height: 150px;">
+                                    <label for="summary">Summary:<br></label>
+                                    <textarea id="summary" disabled></textarea>
+                                </div>
+                            </div>
+                        </div>
+
+
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- Bookings List -->
+            <div class="panel panel--loose panel--raised base-margin-top">
+
+                <!-- Bookings List Area -->
+                <div class="panel panel--loose panel--raised base-margin-top">
+
+                    <!-- Bookings List Area -->
+                    <div class="form-group base-margin-top">
+                        <div class="form-group__text">
+                            <div style="clear: both">
+                                <h6>Number of bookings:<span id="num-of-bookings"> -- </span></h6>
+                            </div>
+                            <h5 for="bookings-list">Bookings:<br></h5>
+                            <pre><code id="bookings-list"></code></pre>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- Footer -->
+        <footer class="footer">
+            <div class="footer__links">
+                <ul class="list list--inline">
+                    <li><a href="http://www.cisco.com/cisco/web/siteassets/contacts/index.html"
+                            target="_blank">Contacts</a>
+                    </li>
+                    <li><a href="https://secure.opinionlab.com/ccc01/o.asp?id=jBjOhqOJ" target="_blank">Feedback</a>
+                    </li>
+                    <li><a href="https://www.cisco.com/c/en/us/about/help.html" target="_blank">Help</a></li>
+                    <li><a href="http://www.cisco.com/c/en/us/about/sitemap.html" target="_blank">Site Map</a></li>
+                    <li><a href="https://www.cisco.com/c/en/us/about/legal/terms-conditions.html" target="_blank">Terms
+                            & Conditions</a></li>
+                    </li>
+                    <li><a href="https://www.cisco.com/c/en/us/about/legal/privacy-full.html" target="_blank">Privacy
+                            Statement</a></li>
+                    <li><a href="https://www.cisco.com/c/en/us/about/legal/privacy-full.html#cookies"
+                            target="_blank">Cookie
+                            Policy</a></li>
+                    <li><a href="https://www.cisco.com/c/en/us/about/legal/trademarks.html"
+                            target="_blank">Trademarks</a></li>
+                </ul>
+            </div>
+        </footer>
+
+    </div>
+
+
+</body>
+
+</html>

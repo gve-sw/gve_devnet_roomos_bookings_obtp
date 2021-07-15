@@ -1,0 +1,234 @@
+<!-- Copyright (c) 2021 Cisco and/or its affiliates.
+
+This software is licensed to you under the terms of the Cisco Sample
+Code License, Version 1.1 (the "License"). You may obtain a copy of the
+License at
+
+https://developer.cisco.com/docs/licenses
+
+All use of the material herein must be in accordance with the terms of
+the License. All rights not expressly granted by the License are
+reserved. Unless required by applicable law or agreed to separately in
+writing, software distributed under the License is distributed on an "AS
+IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express
+or implied. -->
+
+<!doctype html>
+<html lang="en">
+
+<head>
+    <title>Bookings OBTP Dashboard - Demo</title>
+
+    <!-- Using Cisco UI Kit -->
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static',filename='css/cui-standard.min.css') }}">
+
+    <!-- Using AJAX to send get & post http requests -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.2/jquery.min.js"></script>
+
+</head>
+
+<body class="cui">
+
+    <!-- Main Header -->
+    <nav class="header" id="styleguideheader" role="navigation">
+        <div class="container-fluid">
+            <div class="header-panels">
+                <div class="header-panel hidden-md-down">
+                    <a class="header__logo" href="http://www.cisco.com" target="_blank">
+                        <span class="icon-cisco"></span>
+                    </a>
+                    <h1 class="header__title">
+                        <span>Bookings OBTP Dashboard - Demo</span>
+                    </h1>
+                </div>
+                <div class="header-panel header-panel--center base-margin-left base-margin-right hidden-lg-up">
+                    <a class="header__logo" href="http://www.cisco.com" target="_blank">
+                        <span class="icon-cisco"></span>
+                    </a>
+                </div>
+                <div class="header-panel header-panel--right hidden-md-down">
+                    <a href="../logout" class="header-item" title="Logout"><span
+                            class="btn btn--ghost">Logout</span></a>
+                    <a href="../" class="header-item" title="Home"><span class="icon-home"></span></a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Content -->
+    <div class="content content--alt">
+        <div class="container-fluid">
+
+            <!-- Header Demo -->
+            <div class="panel panel--loose panel--raised base-margin-top">
+                <h4 class="title">
+                    Bookings OBTP Dashboard - Demo
+                    <span class="pull-right" disabled>Device: ({{ device_id }}) </span>
+                </h4>
+            </div>
+
+            <!-- Text inputs -->
+            <div class="text-vertical-center">
+
+                <div class="panel panel--loose panel--raised base-margin-top">
+                    <!-- Device Address Area -->
+                    <div class="form-group base-margin-top">
+                        <div class="form-group__text">
+                            <h6 for="device-ip-address">Device Address:</h6>
+                            <textarea id="device-ip-address" rows="1" class="hover"
+                                disabled>{{ device_ip_address }}</textarea>
+                        </div>
+                    </div>
+
+                    <!-- Meeting Title Area -->
+                    <div class="form-group base-margin-top">
+                        <div class="form-group__text">
+                            <h6 for="meeting-title">*Meeting Title:</h6>
+                            <textarea id="meeting-title" rows="1" placeholder="Example: Meeting 1"></textarea>
+                        </div>
+                    </div>
+                    <hr>
+
+                    <!-- Meeting Date/Time: Area -->
+                    <h6>*Meeting Time:</h6>
+                    <div class="form-group base-margin-top">
+                        <div class="form-group">
+                            <label>Start:</label>
+                            <input id="meeting-start-date" type="date">
+                            <input id="meeting-start-time" type="time">
+                            &nbsp;&nbsp;&nbsp;
+                            <label>End:</label>
+                            <input id="meeting-end-date" type="date">
+                            <input id="meeting-end-time" type="time">
+                        </div>
+                    </div>
+                    <hr>
+
+                    <!-- SIP URL Area -->
+                    <div class="form-group base-margin-top">
+                        <div class="form-group__text">
+                            <h6 for="sip-url">SIP URL:</h6>
+                            <textarea id="sip-url" rows="1" class="hover"
+                                placeholder="Example: user@some.webex.com"></textarea>
+                        </div>
+                    </div>
+
+                    <!-- Insert Booking using XML Button -->
+                    <div class="form-group base-margin-top">
+                        <button class="btn btn--success" onclick="InsertBookingUsingXML()">Insert Booking using XML
+                            file</button>
+                        <span class="required-label pull-right">* = Required field</span>
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+        <!-- Footer -->
+        <footer class="footer">
+            <div class="footer__links">
+                <ul class="list list--inline">
+                    <li><a href="http://www.cisco.com/cisco/web/siteassets/contacts/index.html"
+                            target="_blank">Contacts</a>
+                    </li>
+                    <li><a href="https://secure.opinionlab.com/ccc01/o.asp?id=jBjOhqOJ" target="_blank">Feedback</a>
+                    </li>
+                    <li><a href="https://www.cisco.com/c/en/us/about/help.html" target="_blank">Help</a></li>
+                    <li><a href="http://www.cisco.com/c/en/us/about/sitemap.html" target="_blank">Site Map</a></li>
+                    <li><a href="https://www.cisco.com/c/en/us/about/legal/terms-conditions.html" target="_blank">Terms
+                            & Conditions</a></li>
+                    </li>
+                    <li><a href="https://www.cisco.com/c/en/us/about/legal/privacy-full.html" target="_blank">Privacy
+                            Statement</a></li>
+                    <li><a href="https://www.cisco.com/c/en/us/about/legal/privacy-full.html#cookies"
+                            target="_blank">Cookie
+                            Policy</a></li>
+                    <li><a href="https://www.cisco.com/c/en/us/about/legal/trademarks.html"
+                            target="_blank">Trademarks</a></li>
+                </ul>
+            </div>
+        </footer>
+
+    </div>
+
+    <!-- Functions -->
+    <script>
+
+        // Change time format
+        function changeTimeFormat(date, time) {
+            var formatted_date = date.split(/\D/);
+            var year = formatted_date[0];
+            var month = --formatted_date[1];
+            var day = parseInt(formatted_date[2]);
+
+            var formatted_time = time.split(':');
+            var hour = formatted_time[0];
+            var minute = formatted_time[1];
+
+            // new Date(year, month, day, hours, minutes, seconds, milliseconds);
+            date = new Date(year, month, day, hour, minute);
+            date = date.toISOString();
+            return date;
+        }
+
+        // Insert Booking using XML button clicked
+        function InsertBookingUsingXML() {
+
+            var meeting_title = document.getElementById("meeting-title").value;
+            var selected_start_date = document.getElementById("meeting-start-date").value;
+            var selected_start_time = document.getElementById("meeting-start-time").value;
+            var selected_end_date = document.getElementById("meeting-end-date").value;
+            var selected_end_time = document.getElementById("meeting-end-time").value;
+            var sip_url = document.getElementById("sip-url").value;
+
+
+            // Check that there is no empty inputs
+            if (meeting_title == "" || selected_start_date == "" || selected_end_date == "" || selected_end_time == "") {
+                alert("Please fill all the required fields");
+                return false;
+            }
+            else {
+                // Getting confirmation
+                var confirmed = confirm("Add booking: " + meeting_title + "?");
+                if (confirmed) {
+
+                    var start_time = changeTimeFormat(selected_start_date, selected_start_time);
+                    var end_time = changeTimeFormat(selected_end_date, selected_end_time);
+
+                    // Post request, without changing the page
+                    $.post('/send_xml_bookings',
+                        {
+                            // Sending the input of the user for the meeting
+                            meeting_title: meeting_title,
+                            start_time: start_time,
+                            end_time: end_time,
+                            sip_url: sip_url
+                        }).done(function (response) {
+                            alert('Response: ' + response);
+                        });
+
+
+                }
+            }
+
+        }
+
+
+        function matchTodaysDate() {
+            var today = new Date();
+            var today_formatted = today.getFullYear() + "-" + ('0' + (today.getMonth() + 1)).substr(-2) + "-" + ('0' + today.getDate()).substr(-2);
+            var startDate = document.getElementById("meeting-start-date");
+            var endDate = document.getElementById("meeting-end-date");
+            startDate.value = today_formatted;
+            endDate.value = today_formatted;
+        }
+
+        matchTodaysDate();
+
+    </script>
+
+</body>
+
+</html>
